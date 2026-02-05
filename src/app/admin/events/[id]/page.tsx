@@ -35,7 +35,8 @@ export default async function EventPage({ params }: { params: { id: string } | P
     const plusOneCount = rsvps?.reduce((acc, curr) => acc + (curr.status === 'yes' ? curr.plus_one_count : 0), 0) || 0
     const totalAttendees = rsvpCount + plusOneCount
 
-    const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/event/${id}`
+    // const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/event/${id}`
+    const shareUrl = `${process.env.NEXT_EVENT_URL}/event/${id}`
 
     return (
         <div className="space-y-6">
