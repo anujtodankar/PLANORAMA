@@ -17,7 +17,7 @@ export default async function ConfirmationPage({
     const status = resolvedSearchParams?.status as string || 'yes'
     const rsvpId = resolvedSearchParams?.id as string
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const baseUrl = process.env.NEXT_EVENT_URL
     const qrValue = `${baseUrl}/admin/checkin?rsvpId=${rsvpId}`
 
     return (
