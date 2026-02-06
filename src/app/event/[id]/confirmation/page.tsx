@@ -17,8 +17,8 @@ export default async function ConfirmationPage({
     const status = resolvedSearchParams?.status as string || 'yes'
     const rsvpId = resolvedSearchParams?.id as string
 
-    const baseUrl = `https://planorama-mu.vercel.app`
-    const qrValue = `${baseUrl}/admin/checkin?rsvpId=${rsvpId}`
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_EVENT_URL || `https://planorama-mu.vercel.app`).replace(/\/$/, '')
+    const qrValue = `${baseUrl}/checkin?rsvpId=${rsvpId}`
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">

@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
-import { CheckCircle2, User, Mail, Calendar, MapPin, XCircle } from 'lucide-react'
-import { checkInGuest } from '../actions'
+import { CheckCircle2, User, Mail, Calendar, MapPin, XCircle, ShieldCheck } from 'lucide-react'
+import { checkInGuest } from '@/app/admin/actions'
 
 export default async function CheckInPage({
     searchParams
@@ -46,11 +46,21 @@ export default async function CheckInPage({
         )
     }
 
+    const { data: { user } } = await supabase.auth.getUser()
+    const isAdmin = !!user
     const event = rsvp.events as any
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6 py-10">
-            <h1 className="text-3xl font-bold text-gray-900">Guest Check-in</h1>
+        <div className="max-w-2xl mx-auto space-y-6 py-10 px-4">
+            <div className="flex items-center justify-between">
+                <h1 className="text-3xl font-bold text-gray-900">RSVP Verification</h1>
+                {isAdmin && (
+                    <span className="flex items-center text-xs font-semibold bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full uppercase tracking-wider">
+                        <ShieldCheck className="w-3 h-3 mr-1" />
+                        Admin Mode
+                    </span>
+                )}
+            </div>
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-8">
@@ -88,8 +98,8 @@ export default async function CheckInPage({
                             <div className="space-y-2">
                                 <p className="flex items-center">
                                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${rsvp.status === 'yes' ? 'bg-green-100 text-green-800' :
-                                            rsvp.status === 'waitlist' ? 'bg-yellow-100 text-yellow-800' :
-                                                'bg-gray-100 text-gray-800'
+                                        rsvp.status === 'waitlist' ? 'bg-yellow-100 text-yellow-800' :
+                                            'bg-gray-100 text-gray-800'
                                         }`}>
                                         {rsvp.status.toUpperCase()}
                                     </span>
@@ -106,24 +116,36 @@ export default async function CheckInPage({
                     {rsvp.checked_in ? (
                         <div className="bg-green-50 border border-green-100 rounded-xl p-4 flex items-center justify-center">
                             <CheckCircle2 className="w-6 h-6 text-green-600 mr-2" />
-                            <span className="text-green-800 font-bold text-lg">Already Checked In</span>
+                            <span className="text-green-800 font-bold text-lg">Checked In</span>
                         </div>
                     ) : (
-                        <form action={async () => {
-                            'use server'
-                            await checkInGuest(rsvpId)
-                        }}>
-                            <button
-                                type="submit"
-                                className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700 transition shadow-lg hover:shadow-xl flex items-center justify-center text-lg"
-                            >
-                                <CheckCircle2 className="w-6 h-6 mr-2" />
-                                Check In Guest
-                            </button>
-                        </form>
+                        isAdmin ? (
+                            <form action={async () => {
+                                'use server'
+                                await checkInGuest(rsvpId)
+                            }}>
+                                <button
+                                    type="submit"
+                                    className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700 transition shadow-lg hover:shadow-xl flex items-center justify-center text-lg"
+                                >
+                                    <CheckCircle2 className="w-6 h-6 mr-2" />
+                                    Check In Guest
+                                </button>
+                            </form>
+                        ) : (
+                            <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-center">
+                                <p className="text-gray-500 text-sm italic">Verification required at entrance</p>
+                            </div>
+                        )
                     )}
                 </div>
             </div>
+
+            {!isAdmin && (
+                <div className="text-center">
+                    <p className="text-xs text-gray-400">Scan this code at the event entrance for check-in.</p>
+                </div>
+            )}
         </div>
     )
 }
